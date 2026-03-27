@@ -1,0 +1,7 @@
+{
+    "editor.fontFamily": "'Fira Code', 'Fira Mono', 'Cascadia Code', 'Source Code Pro', 'monospace', 'Droid Sans Mono', 'monospace', 'Droid Sans Fallback', 'Roboto Mono', 'IBM Plex Mono', 'Ubuntu Mono', 'Menlo', 'Consolas', 'Liberation Mono', 'DejaVu Sans Mono', 'Bitstream Vera Sans Mono', 'Monaco', 'Andale Mono', 'monospace'",
+    "editor.fontLigatures": true,
+    "editor.fontWeight": "bold",
+    "editor.fontSize": 13,
+    "workbench.colorTheme": "One Dark Pro"
+}
