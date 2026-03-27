@@ -13,3 +13,5 @@ redis:
   db: 0             # Redis mein multiple databases (0-15) ho sakte hain 🗄️
   max_retries: 3    # Redis connection ke liye retry attempts 
   retry_delay: 2    # Retry ke beech ka delay (seconds)
+storage:
+  type: "redis"  # Options: "redis", "memory"

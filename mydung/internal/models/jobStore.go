@@ -1,7 +1,8 @@
 package models
+import "context"
 
-// Yeh hamara Contract hai
+// JobStore interface ko context-aware banate hain
 type JobStore interface {
-	SaveJob(job *Job)
-	GetJob(jobID string) (*Job, bool)
+	SaveJob(ctx context.Context, job *Job) error        // Context add kiya aur error return type bhi
+	GetJob(ctx context.Context, jobID string) (*Job, bool)
 }

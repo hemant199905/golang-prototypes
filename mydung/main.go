@@ -36,13 +36,13 @@ func loadConfig() models.Config {
 
 func main() {
 	config := loadConfig()
+	db, err := storage.NewJobStore(config) 
+    if err != nil {
+        log.Fatalf("Store setup failed: %v", err)
+    }
 	fmt.Printf("Starting Dung Beetle with %d workers... 🚀\n", config.Worker.Count)
 
 	jobQueue := make(chan models.Job, config.Worker.QueueSize)
-	db, err := storage.NewRedisStore(config.Redis)
-	if err != nil {
-		log.Fatalf("Redis connection error: %v", err)
-	}
 	// db := storage.NewMemoryStore()
 	// 1. WaitGroup setup karo
 	var wg sync.WaitGroup
