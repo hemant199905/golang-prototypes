@@ -18,40 +18,56 @@ func respondJSON(w http.ResponseWriter, status int, payload interface{}) {
 	}
 }
 
-// M capital rakha
-func MakeJobHandler(jobQueue chan<- models.Job, db models.JobStore) http.HandlerFunc {	return func(w http.ResponseWriter, r *http.Request) {
-		jobID := fmt.Sprintf("job_%d", time.Now().Unix())
-		newJob := models.Job{ID: jobID, Name: "on_demand_report", Status: "PENDING"}
+func MakeJobHandler(db models.JobStore) http.HandlerFunc {
+    return func(w http.ResponseWriter, r *http.Request) {
+        // 1. Query parameter se queue ka naam nikalna
+        queueName := r.URL.Query().Get("queue")
 
-		// 🌟 Doosre package se function call kiya!
-		db.SaveJob(&newJob)
+        // 2. Production-grade practice: Agar name khali hai toh default set karein
+        if queueName == "" {
+            queueName = "default" 
+        }
 
-		jobQueue <- newJob
-		respondJSON(w, http.StatusAccepted, map[string]string{"job_id": jobID})
-	}
+        jobID := fmt.Sprintf("job_%d", time.Now().Unix())
+        newJob := models.Job{ID: jobID, Status: "PENDING"}
+
+        // Context pass karte hue save aur enqueue karna
+        db.SaveJob(r.Context(), &newJob)
+        err := db.Enqueue(r.Context(), queueName, &newJob)
+        
+        if err != nil {
+            respondJSON(w, http.StatusInternalServerError, map[string]string{"error": "Queue full!"})
+            return
+        }
+
+        respondJSON(w, http.StatusAccepted, map[string]string{
+            "job_id": jobID,
+            "queue":  queueName,
+        })
+    }
 }
 
-// S capital rakha
-func StatusHandler(db models.JobStore) http.HandlerFunc {	return func(w http.ResponseWriter, r *http.Request) {
-		// URL se "id" parameter nikalna
-		jobID := r.URL.Query().Get("id")
+// // S capital rakha
+// func StatusHandler(db models.JobStore) http.HandlerFunc {	return func(w http.ResponseWriter, r *http.Request) {
+// 		// URL se "id" parameter nikalna
+// 		jobID := r.URL.Query().Get("id")
 
-	if jobID == "" {
-		respondJSON(w, http.StatusBadRequest, map[string]string{
-			"error": "Job ID dena zaroori hai!",
-		})
-		return
-	}
+// 	if jobID == "" {
+// 		respondJSON(w, http.StatusBadRequest, map[string]string{
+// 			"error": "Job ID dena zaroori hai!",
+// 		})
+// 		return
+// 	}
 
-	// Hamare Map (Database) mein check karna
-	job, exists := db.GetJob(jobID)
-	if !exists {
-		respondJSON(w, http.StatusNotFound, map[string]string{
-			"error": "Wrong ID! Kripya sahi Job ID dein.",
-		})
-		return
-	}
+// 	// Hamare Map (Database) mein check karna
+// 	job, exists := db.GetJob(jobID)
+// 	if !exists {
+// 		respondJSON(w, http.StatusNotFound, map[string]string{
+// 			"error": "Wrong ID! Kripya sahi Job ID dein.",
+// 		})
+// 		return
+// 	}
 
-	// Agar mil gaya, toh uska pura data (aur status) user ko bhej do
-	respondJSON(w, http.StatusOK, job)
-}}
+// 	// Agar mil gaya, toh uska pura data (aur status) user ko bhej do
+// 	respondJSON(w, http.StatusOK, job)
+// }}

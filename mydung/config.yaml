@@ -15,3 +15,6 @@ redis:
   retry_delay: 2    # Retry ke beech ka delay (seconds)
 storage:
   type: "redis"  # Options: "redis", "memory"
+worker:
+  count: 2       # Har queue ke liye kitne workers honge
+  queues: ["default", "mailer", "cleanup"] # Dynamic queue list 📝

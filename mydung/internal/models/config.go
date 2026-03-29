@@ -7,15 +7,15 @@ type Config struct {
 	Worker WorkerConfig `mapstructure:"worker" yaml:"worker"`
 	Redis  RedisConfig  `mapstructure:"redis" yaml:"redis"`
 	Storage StorageConfig `mapstructure:"storage" yaml:"storage"`
-}
-
-type AppConfig struct {
-	Port int `mapstructure:"port" yaml:"port"`
+	WorkerConfig WorkerConfig `mapstructure:"worker" yaml:"worker"`
 }
 
 type WorkerConfig struct {
-	Count     int `mapstructure:"count" yaml:"count"`
-	QueueSize int `mapstructure:"queue_size" yaml:"queue_size"`
+    Count     int      `mapstructure:"count" yaml:"count"`
+    Queues    []string `mapstructure:"queues" yaml:"queues"` // List of queues 📝
+}
+type AppConfig struct {
+	Port int `mapstructure:"port" yaml:"port"`
 }
 
 type StorageConfig struct {
